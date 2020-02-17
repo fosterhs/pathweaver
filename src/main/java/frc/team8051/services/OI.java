@@ -35,9 +35,8 @@ public class OI {
     }
 
     public void initializeBind() {
-
+        
     }
-
     public double getRightXAxis() {
          return joystick.getRawAxis(4); 
     }
