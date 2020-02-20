@@ -3,11 +3,8 @@ package frc.team8051.subsystems;
 import frc.team8051.sensors.DrivebaseEncoder;
 import frc.team8051.sensors.Gyro;
 
-import java.util.function.BiConsumer;
-
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
-import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
@@ -20,7 +17,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-// Wrapper Class for differential drivebase
 public class DifferentialDrivebase extends SubsystemBase {
     private final WPI_VictorSPX leftMotor = new WPI_VictorSPX(15);
     private final WPI_VictorSPX rightMotor =  new WPI_VictorSPX(14);
@@ -28,18 +24,23 @@ public class DifferentialDrivebase extends SubsystemBase {
     private final DrivebaseEncoder encoders = new DrivebaseEncoder();;
     private final Gyro gyro = new Gyro();
 
-    // actual trackwidth is 31 inches
+    // actual trackwidth is 31 inches not 2.23 ft
     private final DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(
-      Units.feetToMeters(2.2332928074541547)
+      // Units.feetToMeters(2.23) carpet
+      Units.feetToMeters(2.19)
     );
 
     private Pose2d pose = new Pose2d(0.0, 0.0, getHeading());
 
     private final DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(getHeading(), pose);
   
-    private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.992, 0.959, 0.205);
-    private final PIDController leftPIDController = new PIDController(8.99, 0, 0);
-    private final PIDController rightPIDController = new PIDController(8.99, 0, 0);
+    private final SimpleMotorFeedforward feedforward = 
+    new SimpleMotorFeedforward(
+      /* 0.992, 0.959, 0.205 carpet */
+      0.808, 0.952, 0.144
+    );
+    private final PIDController leftPIDController = new PIDController(6.43, 0, 0/* 8.99, 0, 0 carpet */);
+    private final PIDController rightPIDController = new PIDController(6.43, 0, 0/* 8.99, 0, 0 carpet */);
     
     public DifferentialDrivebase() {
         differentialDrive = new DifferentialDrive(leftMotor, rightMotor);
@@ -63,7 +64,7 @@ public class DifferentialDrivebase extends SubsystemBase {
     }
 
     public Rotation2d getHeading() {
-        return Rotation2d.fromDegrees(Math.IEEEremainder(gyro.getAngle(), 360));
+        return Rotation2d.fromDegrees(Math.IEEEremainder(gyro.getHeading(), 360));
     }
 
     public DifferentialDriveWheelSpeeds getWheelSpeeds() {
@@ -95,12 +96,13 @@ public class DifferentialDrivebase extends SubsystemBase {
     
       public void setVolts(double leftVolts, double rightVolts) {
         leftMotor.setVoltage(leftVolts);
-        rightMotor.setVoltage(rightVolts);
+        rightMotor.setVoltage(-rightVolts);
         differentialDrive.feed();
       }
     
       public void reset() {
         zeroDistance();
+        zeroHeading();
         odometry.resetPosition(new Pose2d(), getHeading());
       }
     
