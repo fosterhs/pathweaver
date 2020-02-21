@@ -33,10 +33,10 @@ public class Robot extends TimedRobot {
   private Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
     new Pose2d(0, 0, new Rotation2d(0)),
     List.of(
-      new Translation2d(1, -0.5),
-      new Translation2d(2, 0.5)
+      new Translation2d(.5, 0)
+      // new Translation2d(2, 0.5)
     ),
-    new Pose2d(3, 0, new Rotation2d(0)),
+    new Pose2d(2, 0, new Rotation2d(Math.PI)),
     trajectoryConfig
   );
   
@@ -62,7 +62,11 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-
+    List<Trajectory.State> li = trajectory.getStates();
+    System.out.println("Total states: " + li.size());
+    for(Trajectory.State v : li) {
+      System.out.println(v);
+    }
   }
 
   @Override
