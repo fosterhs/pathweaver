@@ -14,9 +14,10 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-final class Cermaics {
+final class Ceramics {
   final class FeedForwardConstants {
     // 0.808, 0.952, 0.144
     public static final double Ks = 0.808;
@@ -34,13 +35,13 @@ final class Cermaics {
 final class Carpet {
   final class FeedForwardConstants {
     // 0.992, 0.959, 0.205
-    public static final double Ks = 0.992;
-    public static final double Kv = 0.959;
-    public static final double Ka = 0.205;
+    public static final double Ks = 0.924; // 0.992;
+    public static final double Kv = 0.961; // 0.959;
+    public static final double Ka = 0.215; // 0.205;
   }
   final class PIDConstants {
     // 8.99, 0, 0
-    public static final double Kp = 8.99;
+    public static final double Kp = 9.38; // 8.99;
     public static final double Ki = 0.00;
     public static final double Kd = 0.00;
   }
@@ -50,11 +51,12 @@ public class DifferentialDrivebase extends SubsystemBase {
 
     private final WPI_VictorSPX leftMotor = new WPI_VictorSPX(15);
     private final WPI_VictorSPX rightMotor =  new WPI_VictorSPX(14);
-    private final DifferentialDrive differentialDrive;
-    private final DrivebaseEncoder encoders = new DrivebaseEncoder();;
+    private final DifferentialDrive differentialDrive = new DifferentialDrive(leftMotor, rightMotor);
+    private final DrivebaseEncoder encoders = new DrivebaseEncoder(true);
     private final Gyro gyro = new Gyro();
 
-    private final DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(0.685);
+    // Units.feetToMeters(2.275543316917169)
+    private final DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(0.865);
 
     private Pose2d pose = new Pose2d(0.0, 0.0, getHeading());
 
@@ -71,10 +73,6 @@ public class DifferentialDrivebase extends SubsystemBase {
     private final PIDController rightPIDController = new PIDController(Carpet.PIDConstants.Kp, 0, 0);
     
     public DifferentialDrivebase() {
-        differentialDrive = new DifferentialDrive(leftMotor, rightMotor);
-
-        zeroDistance();
-
         SmartDashboard.putData("Left PID Controller", leftPIDController);
         SmartDashboard.putData("Right PID Controller", rightPIDController);
     }
@@ -141,6 +139,8 @@ public class DifferentialDrivebase extends SubsystemBase {
           encoders.getLeftDistance(), 
           encoders.getRightDistance()
         );
+        
+        System.out.println(pose);
         SmartDashboard.putNumber("Gyro_Heading", gyro.getHeading());
       }
     

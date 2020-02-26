@@ -13,18 +13,22 @@ public class DrivebaseEncoder{
     private Encoder rightEncoder;
     private Encoder leftEncoder;
 
-    public DrivebaseEncoder() {
+    public DrivebaseEncoder(boolean reset) {
         rightEncoder = new Encoder(6, 7, true);
         leftEncoder = new Encoder(8, 9, false);
         
         // using meter is easier in ramsete command
         rightEncoder.setDistancePerPulse(Units.feetToMeters(distancePerPulse));
         leftEncoder.setDistancePerPulse(Units.feetToMeters(distancePerPulse));
-
+        if(reset) zeroDistance();
         SmartDashboard.putData("Drivebase Left Encoder", leftEncoder);
         SmartDashboard.putData("Drivebase Right Encoder", rightEncoder);
     }
 
+    public DrivebaseEncoder() {
+        this(false);
+    }
+    
     public double getLeftDistance() {
         return leftEncoder.getDistance();
     }
@@ -40,6 +44,7 @@ public class DrivebaseEncoder{
     public double getLeftVelocity() {
         return leftEncoder.getRate();
     }
+    
     public void zeroDistance() {
         leftEncoder.reset();
         rightEncoder.reset();

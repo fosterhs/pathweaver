@@ -1,13 +1,18 @@
 package frc.team8051.sensors;
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+
+import com.analog.adis16448.frc.ADIS16448_IMU;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class Gyro extends  ADXRS450_Gyro {
+public class Gyro {
+    private final ADIS16448_IMU imu = new ADIS16448_IMU();
     public Gyro() {
-        SmartDashboard.putData("Gyro", this);
+        SmartDashboard.putData("imu", imu);
+    }
+    public double getHeading() {
+        return -imu.getAngle();
     }
 
-    public double getHeading() {
-        return -getAngle();
+    public void reset() {
+        imu.reset();
     }
 }
